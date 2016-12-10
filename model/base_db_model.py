@@ -27,24 +27,32 @@ class BaseDataModel(object):
     def __del__(self):
         self.close_db()
 
-    def select(self, fields=None, map_field=None):
-        if not fields:
-            query_field_str = '*'
-        else:
-            query_field_str = ",".join(fields)
-        
-        sql = "select " + query_field_str + " from " + self._table_name + self.map_query(map_field)
-        self.cursor.execute(sql)
-        batchs = self.cursor.fetchall()
-        ret_data = []
-        if not batchs:
-            return ret_data
-        for one in batchs:
-            ret_data.append(one)
-        return ret_data
+    #def select(self, fields=None, map_field=None):
+    #    if not fields:
+    #        query_field_str = '*'
+    #    else:
+    #        query_field_str = ",".join(fields)
+    #    
+    #    sql = "select " + query_field_str + " from " + self._table_name + self.map_query(map_field)
+    #    self.cursor.execute(sql)
+    #    batchs = self.cursor.fetchall()
+    #    ret_data = []
+    #    if not batchs:
+    #        return ret_data
+    #    for one in batchs:
+    #        ret_data.append(one)
+    #    return ret_data
+
+    def select(self, userid):
+        sql = "SELECT * FROM MissingPeople WHERE userid = %s" % userid
+        return self.final_execute( sql )
+
 
     def select_rand(self):
         sql = "SELECT * FROM MissingPeople ORDER BY RAND() LIMIT 10"
+        return self.final_execute( sql )
+
+    def final_execute(self, sql):
         self.cursor.execute(sql)
         batchs = self.cursor.fetchall()
         ret_data = []
@@ -53,7 +61,7 @@ class BaseDataModel(object):
         for one in batchs:
             ret_data.append(one)
         return ret_data
-    
+        
         
         
 

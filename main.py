@@ -10,11 +10,15 @@ from json import *
 import json
 import model.get_missing_people_list
 from model.get_missing_people_list import GetMissingPeopleList
-app = Flask(__name__)
+from model.get_missing_info_by_userid import GetMissingInfoByUserId
 from OpenSSL import SSL
+#from lib.youtuapi import YouTuAPI
+
+app = Flask(__name__)
 #CORS(app)
 
 
+#经纬度转换
 class LocConvert():
     Latitude = ""
     Longitude = ""
@@ -30,7 +34,7 @@ class LocConvert():
         Latitude = locList[1]
         return Longitude , Latitude
 
-
+#后台与前段失踪人员信息的转换
 class MissingInfo():
     name = ""
     age = ""
@@ -65,9 +69,9 @@ class MissingInfo():
         self.age = missInfo["missing_age"]
         self.sex = missInfo["missing_sex"]
         self.losCity = missInfo["missing_city"]
-        self.misTime = missInfo["missing_date"]
+        self.misTime = str(missInfo["missing_date"])
         oLocConvert = LocConvert()
-        Longitude , Latitude = oLocConvert.DisassembleLoc(missInfo["userLoc"])
+        Longitude , Latitude = oLocConvert.DisassembleLoc(missInfo["userloc"])
         self.Longitude = Longitude
         self.Latitude = Latitude
         self.photoUrl = missInfo["photoUrl"]
@@ -76,12 +80,19 @@ class MissingInfo():
                 
     
 
+    
+    
 
 
+
+
+
+
+#突出失踪人员信息到前端
 class PhotoDict():
     photoCnt = 0
     photoDicts = {
-            "photoCnt":0,
+            
         }
 
     def AddDict(self, missInfoDict):
@@ -93,6 +104,15 @@ class PhotoDict():
         return JSONEncoder().encode(self.photoDicts)        
     
 
+
+class TencentCloud():
+    def upload(self, local_pic_path, userid):
+        oYoutuApi = YouTuAPI()
+        fileSuffixField = local_pic_path.split("/")
+        fileSuffix = SuffixField[1]
+        remote_pic_path = userid + "_" + str(int(time.time())) + "_" + str(random.randint(1, 10)) + fileSuffix    
+        photoRemoteUrl = youtu.upload_picture(local_pic_path, remote_pic_path)     
+        return photoRemoteUrl
 
 @app.route('/',methods=['GET'])
 def get_index0():
@@ -108,27 +128,26 @@ def getMissingPeopleList():
     for missInfo in dictTemp:
         oMissingInfo.ConverMissInfo(missInfo) 
         oPhotoDict.AddDict(oMissingInfo.ToDict())
-
-    #oMissingInfo = MissingInfo()
-    #oMissingInfo.name = "tom"
-    #oPhotoDict = PhotoDict()   
-    #oPhotoDict.AddDict(oMissingInfo.ToDict())
-    #oPhotoDict.AddDict(oMissingInfo.ToDict())    
     return oPhotoDict.ToJson()
 
-@app.route('/GetPulicMissingInfoByUserId/<userId>',methods=['GET'])
-def getPulicMissingInfoByUserId(userId):
+@app.route('/GetMissingInfoByUserId/<userId>',methods=['GET'])
+def getMissingInfoByUserId(userId):
     
+    oGetMissingInfoByUserId = GetMissingInfoByUserId()
+    dictTemp = oGetMissingInfoByUserId.Select(userId) 
     oMissingInfo = MissingInfo()
-    oMissingInfo.name = "tom"
     oPhotoDict = PhotoDict()   
-    oPhotoDict.AddDict(oMissingInfo.ToDict())
-    return oPhotoDict.ToJson() 
+    for missInfo in dictTemp:
+        oMissingInfo.ConverMissInfo(missInfo) 
+        oPhotoDict.AddDict(oMissingInfo.ToDict())
+    return oPhotoDict.ToJson()
     
 @app.route('/AcceptMissingPeople',methods=['POST'])
 def AcceptMissingPeople():
-    print request
-    return '/AcceptMissingPeople'
+    print "="*100
+    #print request.form
+    #print "="*100
+    return "1" #'/AcceptMissingPeople'
 
 @app.route('/AcceptSuspectedMissingPeopleInfo',methods=['POST'])
 def get_index2():
