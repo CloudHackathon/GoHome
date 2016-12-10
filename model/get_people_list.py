@@ -15,8 +15,9 @@ class GetPoepleList(object):
     def GetPeople(self, offset, count ):
         sql = "SELECT id, local_url, photoUrl from MissingPeople LIMIT \"%d\",  \"%d\" );"
         sql = sql % ( offset, count )
-        return self.model.execute( sql )
+        return self.model.final_execute( sql )
 	
 
 if __name__=='__main__':
-    obj = GetPoepleList(json_req)
+    obj = GetPoepleList()
+    print obj.GetPeople(0,10)
