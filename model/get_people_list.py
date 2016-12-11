@@ -13,8 +13,9 @@ class GetPoepleList(object):
         self.model = BaseDataModel()
 
     def GetPeople(self, offset, count ):
-        sql = "SELECT id, local_url, photoUrl from MissingPeople LIMIT \"%d\",  \"%d\" );"
+        sql = "SELECT id, userid, local_url, photoUrl, userloc from MissingPeople LIMIT %d,  %d;"
         sql = sql % ( offset, count )
+        print sql
         return self.model.final_execute( sql )
 	
 

@@ -33,3 +33,10 @@ reserve3 varchar(64),
 reserve4 varchar(64),
 reserve5 varchar(64)
 );
+
+create table DetectResult (
+    id INT primary key NOT NULL AUTO_INCREMENT,
+    userid VARCHAR(1024),
+    photourl VARCHAR(1024),
+    score int unsigned default 0
+);

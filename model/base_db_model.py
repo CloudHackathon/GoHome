@@ -44,9 +44,14 @@ class BaseDataModel(object):
     #    return ret_data
 
     def select(self, userid):
-        sql = "SELECT * FROM MissingPeople WHERE userid = %s" % userid
+        sql = "SELECT * FROM MissingPeople WHERE userid = '%s'" % userid
+        print sql
         return self.final_execute( sql )
 
+    def select_one(self, userid):
+        sql = "SELECT * FROM DetectResult WHERE userid = '%s' limit 1" % userid
+        print sql
+        return self.final_execute( sql )
 
     def select_rand(self):
         sql = "SELECT * FROM MissingPeople ORDER BY RAND() LIMIT 10"
@@ -55,6 +60,9 @@ class BaseDataModel(object):
     def final_execute(self, sql):
         self.cursor.execute(sql)
         batchs = self.cursor.fetchall()
+        print "/"*100
+        print batchs
+        print "/"*100
         ret_data = []
         if not batchs:
             return ret_data
