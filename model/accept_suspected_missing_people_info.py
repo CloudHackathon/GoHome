@@ -17,8 +17,10 @@ class AcceptSuspectedMissingPeopleInfo(object):
     def Insert(self):
         #info = JSONDecoder().decode(self.json_req)
         info = self.info
-        sql = "insert into SuspectMissingPeople (userid, userloc, useruploadtime, photoUrl ) values (\"%s\", \"%s\", \"%s\", \"%s\" );"
-        sql = sql % ( info["userid"], info["userloc"], info["useruploadtime"], info["photoUrl"] )
+        sql = "insert into SuspectMissingPeople (userid, userloc, useruploadtime, photoUrl, localurl ) values (\"%s\", \"%s\", \"%s\", \"%s\", \"%s\" );"
+        sql = sql % ( info["userid"], info["userloc"], info["useruploadtime"], info["photoUrl"], info["localurl"] )
+        print "-="*5    
+        print sql
         self.model.execute( sql )
 	
     
